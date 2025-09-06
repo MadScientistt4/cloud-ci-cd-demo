@@ -2,7 +2,7 @@ name: Deploy to AWS App Runner
 
 on:
   push:
-    branches: [ "main" ]  # or master, whichever your repo uses
+    branches: [ "main" ]
 
 jobs:
   deploy:
@@ -26,10 +26,17 @@ jobs:
 
       - name: Build, Tag, and Push Docker image
         run: |
-          IMAGE_TAG=latest
+          IMAGE_TAG=${{ github.sha }}
           docker build -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG .
           docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG
 
       - name: Deploy to App Runner
         run: |
-          aws apprunner start-deployment --service-arn arn:aws:apprunner:ap-south-1:697957568941:service/madd/5f02fb9213a046a38ab9084e4759a549
+          aws apprunner update-service \
+            --service-arn arn:aws:apprunner:ap-south-1:697957568941:service/madd/5f02fb9213a046a38ab9084e4759a549 \
+            --source-configuration '{
+              "ImageRepository": {
+                "ImageIdentifier": "'${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:'${{ github.sha }}'",
+                "ImageRepositoryType": "ECR"
+              }
+            }'
