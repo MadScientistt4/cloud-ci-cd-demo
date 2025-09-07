@@ -3,7 +3,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
-  res.json({ msg: "Hello world bitches on AWS App Runner!" });
+  res.json({ msg: "Hello world bitch on AWS App Runner!" });
 });
 
 app.get("/health", (req, res) => res.status(200).send("OK"));
