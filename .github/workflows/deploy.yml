@@ -32,11 +32,13 @@ jobs:
 
       - name: Deploy to App Runner
         run: |
+          IMAGE_TAG=${{ github.sha }}
           aws apprunner update-service \
             --service-arn arn:aws:apprunner:ap-south-1:697957568941:service/madd/5f02fb9213a046a38ab9084e4759a549 \
-            --source-configuration '{
-              "ImageRepository": {
-                "ImageIdentifier": "'${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:'${{ github.sha }}'",
-                "ImageRepositoryType": "ECR"
+            --source-configuration "{
+              \"ImageRepository\": {
+                \"ImageIdentifier\": \"${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG\",
+                \"ImageRepositoryType\": \"ECR\"
               }
-            }'
+            }"
+
